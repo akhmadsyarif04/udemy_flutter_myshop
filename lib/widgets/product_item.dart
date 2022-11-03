@@ -1,19 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import "package:flutter/material.dart";
+import 'package:provider/provider.dart';
 
 import "../screens/product_detail_screen.dart";
+import "../providers/product.dart";
 
 class ProductItem extends StatelessWidget {
-  final String id;
-  final String title;
-  final String imageUrl;
-
-  ProductItem(this.id, this.title, this.imageUrl); // position argument
-
   @override
   Widget build(BuildContext context) {
+    final product = Provider.of<Product>(context, listen: false);
     return ClipRRect(
         borderRadius: BorderRadius.circular(
             10), // wajib menggunakan ClipRRect untuk menambahkan border radius
@@ -22,23 +17,26 @@ class ProductItem extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pushNamed(
                 ProductDetailScreen.routeName,
-                arguments: id,
+                arguments: product.id,
               );
             },
             child: Image.network(
-              imageUrl,
+              product.imageUrl.toString(),
               fit: BoxFit.cover,
             ),
           ),
           footer: GridTileBar(
             backgroundColor: Colors.grey,
             leading: IconButton(
-              icon: Icon(Icons.favorite),
-              onPressed: () {},
+              icon: Icon(
+                  product.isFavorite ? Icons.favorite : Icons.favorite_border),
+              onPressed: () {
+                product.toggleFavoritStatus();
+              },
               color: Theme.of(context).accentColor,
             ),
             title: Text(
-              title,
+              product.title.toString(),
               textAlign: TextAlign.center,
             ),
             trailing: IconButton(

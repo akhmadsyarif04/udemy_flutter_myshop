@@ -14,8 +14,11 @@ class ProductsGrid extends StatelessWidget {
       padding: const EdgeInsets.all(
           10.0), // const agar EdgeInsets tidak dirender ulang ketika halaman ini dipanggil lagi.
       itemCount: products.length,
-      itemBuilder: (ctx, i) => ProductItem(products[i].id.toString(),
-          products[i].title.toString(), products[i].imageUrl.toString()),
+      itemBuilder: (ctx, i) => ChangeNotifierProvider(
+          // builder: (c) => products[i], // ini bisa diganti dengan create dibawah
+          /* Since provider version 3.2.0 "builder" is marked as deprecated in favor of "create". */
+          create: (c) => products[i],
+          child: ProductItem()),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 3 / 2,
