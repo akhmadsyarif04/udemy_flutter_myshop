@@ -5,11 +5,17 @@ import '../providers/products.dart';
 import './product_item.dart';
 
 class ProductsGrid extends StatelessWidget {
+  final bool showFavs;
+
+  ProductsGrid(this.showFavs);
+
   @override
   Widget build(BuildContext context) {
     // listener provider
     final productsData = Provider.of<Products>(context);
-    final products = productsData.items; // extract data productsData
+    final products = showFavs
+        ? productsData.favoriteItems
+        : productsData.items; // extract data productsData
     return GridView.builder(
       padding: const EdgeInsets.all(
           10.0), // const agar EdgeInsets tidak dirender ulang ketika halaman ini dipanggil lagi.
