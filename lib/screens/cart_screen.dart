@@ -10,7 +10,8 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<Cart>(context, listen: false);
+    final cart = Provider.of<Cart>(
+        context); // automatis set listen: true, yang artinya akan dirender lagi jika ada perubahan data
 
     return Scaffold(
       appBar: AppBar(
@@ -60,6 +61,7 @@ class CartScreen extends StatelessWidget {
                   itemCount: cart.items.length,
                   itemBuilder: (ctx, i) => CartItem(
                         cart.items.values.toList()[i].id,
+                        cart.items.keys.toList()[i],
                         cart.items.values.toList()[i].price,
                         cart.items.values.toList()[i].quantity,
                         cart.items.values.toList()[i].title,
