@@ -9,7 +9,7 @@ class CartItem {
   CartItem({
     @required this.id,
     @required this.title,
-    @required this.quantity,
+    @required this.quantity = 0,
     @required this.price,
   });
 }
@@ -61,6 +61,26 @@ class Cart with ChangeNotifier {
 
   void removeItem(String productId) {
     _items.remove(productId);
+    notifyListeners();
+  }
+
+  void removeSingleItem(String productId) {
+    if (!_items.containsKey(productId)) {
+      // jika bukan termasuk dalam items maka langsung return/lewati
+      return;
+    }
+
+    if (_items[productId]!.quantity! > 1) {
+      _items.update(
+          productId,
+          (existingCartItem) => CartItem(
+              id: existingCartItem.id,
+              title: existingCartItem.title,
+              quantity: existingCartItem.quantity! - 1,
+              price: existingCartItem.price));
+    } else {
+      _items.remove(productId);
+    }
     notifyListeners();
   }
 
