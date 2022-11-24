@@ -6,6 +6,8 @@ import '../providers/products.dart';
 
 import '../widgets/user_product_item.dart';
 
+import '../screens/edit_product_screen.dart';
+
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
   @override
@@ -17,7 +19,11 @@ class UserProductsScreen extends StatelessWidget {
           title: const Text(
               'Your Products'), // yang memiliki type const disini tidak akan direbuild flutter karena flutter tau itu tidak akan berubah
           actions: <Widget>[
-            IconButton(onPressed: () {}, icon: const Icon(Icons.add))
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(EditProductScreen.routeName);
+                },
+                icon: const Icon(Icons.add))
           ]),
       drawer: AppDrawer(),
       body: Padding(
