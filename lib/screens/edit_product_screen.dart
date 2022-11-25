@@ -10,13 +10,32 @@ class EditProductScreen extends StatefulWidget {
 class _EditProductScreenState extends State<EditProductScreen> {
   final _priceFocusNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
+  final _imageUrlController = TextEditingController();
+  final _imageurlFocusNode = FocusNode();
 
   @override
+  void initState() {
+    _imageurlFocusNode
+        .addListener(_updateImageUrl); // setiap kali image keluar dari focus
+    super.initState();
+  }
+
   void dispose() {
     // untuk memastikan memori yang digunakan focusNode untuk dihapus
     _priceFocusNode.dispose();
     _descriptionFocusNode.dispose();
-    super.dispose();
+    _imageUrlController.dispose();
+    _imageurlFocusNode.dispose();
+    _imageurlFocusNode.removeListener(_updateImageUrl);
+    super
+        .dispose(); // super keyword is used to refer immediate parent class object.
+  }
+
+  void _updateImageUrl() {
+    if (!_imageurlFocusNode.hasFocus) {
+      // jika image url keluar dari focus input maka rebuild ulang
+      setState(() {});
+    }
   }
 
   Widget build(BuildContext context) {
@@ -49,7 +68,39 @@ class _EditProductScreenState extends State<EditProductScreen> {
               maxLines: 3,
               keyboardType: TextInputType.multiline,
               focusNode: _descriptionFocusNode,
-            ), // dimulti line tidak bisa menggunakan focusNode karena return disini pada keyboard digunakan untuk enter bari baru.
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  width: 100,
+                  height: 100,
+                  margin: EdgeInsets.only(top: 8, right: 10),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 1, color: Colors.grey)),
+                  child: _imageUrlController.text.isEmpty
+                      ? Text('Enter a URL')
+                      : FittedBox(
+                          child: Image.network(
+                            _imageUrlController.text,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                ),
+                Expanded(
+                  child: TextFormField(
+                    decoration: InputDecoration(labelText: 'Image URL'),
+                    keyboardType: TextInputType.url,
+                    textInputAction: TextInputAction.done,
+                    controller: _imageUrlController,
+                    focusNode: _imageurlFocusNode,
+                    onEditingComplete: () {
+                      setState(() {});
+                    },
+                  ),
+                )
+              ],
+            ) // dimulti line tidak bisa menggunakan focusNode karena return disini pada keyboard digunakan untuk enter bari baru.
           ],
         )),
       ),
