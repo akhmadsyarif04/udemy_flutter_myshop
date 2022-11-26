@@ -87,4 +87,9 @@ class Products with ChangeNotifier {
       print('tidak ditemukan id/data yang ingin diupdate');
     }
   }
+
+  void deleteProduct(String id) {
+    _items.removeWhere((prod) => prod.id == id);
+    notifyListeners();
+  }
 }
