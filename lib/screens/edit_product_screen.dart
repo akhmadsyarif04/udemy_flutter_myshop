@@ -45,6 +45,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   }
 
   void _saveForm() {
+    final isValid = _form.currentState!
+        .validate(); // akan memicu semua validator dan akan mengembalikan true jika semua validator return tidak ada kesalahan input (null), dan akan return false jika terjadi kesalahan pada validator form input yng telah diterapkan
+    if (!isValid) {
+      return;
+    }
     _form.currentState!.save();
     print(_editProduct.title);
     print(_editProduct.description);
@@ -72,6 +77,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       .next, // yang artinya ketika pada keyboard HP diklik return maka akan ke input selanjutnya bukan mengirimkan data
                   onFieldSubmitted: (_) {
                     FocusScope.of(context).requestFocus(_priceFocusNode);
+                  },
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      // jika tidak valid
+                      return 'Please provide a value';
+                    }
+
+                    return null; // jika valid
                   },
                   onSaved: (value) {
                     _editProduct = Product(
