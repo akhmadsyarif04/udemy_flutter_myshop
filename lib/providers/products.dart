@@ -75,4 +75,16 @@ class Products with ChangeNotifier {
     _items.add(newProduct);
     notifyListeners();
   }
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = _items.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0) {
+      // jika terdapat id yang sama, artinya data yang diperbarui ada dalam list _items
+      // maka perbarui
+      _items[prodIndex] = newProduct;
+      notifyListeners();
+    } else {
+      print('tidak ditemukan id/data yang ingin diupdate');
+    }
+  }
 }

@@ -20,12 +20,44 @@ class _EditProductScreenState extends State<EditProductScreen> {
       GlobalKey<FormState>(); // untuk menghubungkan dengan widget form
   var _editProduct =
       Product(id: null, title: '', description: '', price: 0, imageUrl: '');
+  var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': ''
+  };
+  var _isInit = true;
 
   @override
   void initState() {
     _imageurlFocusNode
         .addListener(_updateImageUrl); // setiap kali image keluar dari focus
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // didChangeDependencies akan jalan beberapa kali
+    if (_isInit) {
+      final productId = ModalRoute.of(context)!.settings.arguments
+          as dynamic; // mendapatkan argument yang dikirim lewat route
+      if (productId != null) {
+        // berarti melakukan update jika ada argument yang dikirim
+        _editProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _initValues = {
+          'title': _editProduct.title.toString(),
+          'description': _editProduct.description.toString(),
+          'price': _editProduct.price.toString(),
+          // 'imageUrl': _editProduct.imageUrl.toString() // tidak bisa diterapkan pada initialvalue input karena terdapat imageUrl controller. tidak boleh ada initialvalue jika ada controller
+          'imageUrl': ''
+        };
+        _imageUrlController.text = _editProduct.imageUrl.toString();
+        print(productId);
+      }
+    }
+    _isInit = false;
+    super.didChangeDependencies();
   }
 
   void dispose() {
@@ -65,8 +97,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
     print(_editProduct.description);
     print(_editProduct.price);
     print(_editProduct.imageUrl);
-    Provider.of<Products>(context, listen: false).addProduct(_editProduct);
-    Navigator.of(context).pop(); // kembali ke halaman sebelumnya
+    if (_editProduct.id != null) {
+      // berarti edit data
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editProduct.id.toString(), _editProduct);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(_editProduct);
+      Navigator.of(context).pop(); // kembali ke halaman sebelumnya
+    }
   }
 
   Widget build(BuildContext context) {
@@ -84,6 +122,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
             child: ListView(
               children: <Widget>[
                 TextFormField(
+                  initialValue: _initValues['title'],
                   decoration: InputDecoration(labelText: 'Title'),
                   textInputAction: TextInputAction
                       .next, // yang artinya ketika pada keyboard HP diklik return maka akan ke input selanjutnya bukan mengirimkan data
@@ -100,7 +139,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                   onSaved: (value) {
                     _editProduct = Product(
-                        id: null,
+                        id: _editProduct.id,
+                        isFavorite: _editProduct.isFavorite,
                         title: value,
                         description: _editProduct.description,
                         price: _editProduct.price,
@@ -108,6 +148,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['price'],
                   decoration: InputDecoration(labelText: 'Price'),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -129,7 +170,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                   onSaved: (value) {
                     _editProduct = Product(
-                        id: null,
+                        id: _editProduct.id,
+                        isFavorite: _editProduct.isFavorite,
                         title: _editProduct.title,
                         description: _editProduct.description,
                         price: double.parse(value!),
@@ -137,6 +179,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                 ),
                 TextFormField(
+                  initialValue: _initValues['description'],
                   decoration: InputDecoration(labelText: 'Description'),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
@@ -152,7 +195,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                   onSaved: (value) {
                     _editProduct = Product(
-                        id: null,
+                        id: _editProduct.id,
+                        isFavorite: _editProduct.isFavorite,
                         title: _editProduct.title,
                         description: value,
                         price: _editProduct.price,
@@ -207,7 +251,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         },
                         onSaved: (value) {
                           _editProduct = Product(
-                              id: null,
+                              id: _editProduct.id,
+                              isFavorite: _editProduct.isFavorite,
                               title: _editProduct.title,
                               description: _editProduct.description,
                               price: _editProduct.price,
