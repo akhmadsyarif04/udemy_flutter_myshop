@@ -87,7 +87,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     final isValid = _form.currentState!
         .validate(); // akan memicu semua validator dan akan mengembalikan true jika semua validator return tidak ada kesalahan input (null), dan akan return false jika terjadi kesalahan pada validator form input yng telah diterapkan
     if (!isValid) {
@@ -106,10 +106,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
       });
       Navigator.of(context).pop(); // kembali ke halaman sebelumnya
     } else {
-      Provider.of<Products>(context, listen: false)
-          .addProduct(_editProduct)
-          .catchError((onError) {
-        return showDialog<Null>(
+      try {
+        await Provider.of<Products>(context, listen: false)
+            .addProduct(_editProduct);
+      } catch (e) {
+        await showDialog<Null>(
             context: context,
             builder: (ctx) => AlertDialog(
                   title: Text('An Error Occurred!'),
@@ -122,12 +123,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         child: Text('Okey'))
                   ],
                 ));
-      }).then((_) {
+      } finally {
+        // tidak peduli sukses atau gagal ini akan dijalankan setelah semua selesai
         Navigator.of(context).pop(); // kembali ke halaman sebelumnya
         setState(() {
           _isLoading = false;
         });
-      });
+      }
     }
   }
 

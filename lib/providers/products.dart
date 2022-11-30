@@ -68,23 +68,23 @@ class Products with ChangeNotifier {
   //   notifyListeners(); // untuk memerintahkan state management cek perubahan data
   // }
 
-  Future<void> addProduct(Product product) {
+  Future<void> addProduct(Product product) async {
     // begin send add data to firebase
     // https://shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app/
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products');
-    return http
-        .post(url,
-            body: json.encode({
-              'title': product.title,
-              'description': product.description,
-              'price': product.price,
-              'imageUrl': product.imageUrl,
-              'isFavorite': product.isFavorite
-            }))
-        .then((response) {
-      print(json.decode(response.body));
+        '/products'); // sengaja dihilangkan .json agar terjadi error
+
+    try {
+      final response = await http.post(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'isFavorite': product.isFavorite
+          }));
+
       // begin add to local data state provider
       final newProduct = Product(
           id: json.decode(response.body)['name'],
@@ -96,10 +96,10 @@ class Products with ChangeNotifier {
       // end add to local data state provider
 
       notifyListeners();
-    }).catchError((onError) {
+    } catch (onError) {
       print(onError);
       throw onError;
-    });
+    }
     // end send add data to firebase
   }
 
