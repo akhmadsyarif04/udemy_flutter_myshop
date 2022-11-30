@@ -73,7 +73,7 @@ class Products with ChangeNotifier {
     // https://shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app/
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products.json');
+        '/products');
     return http
         .post(url,
             body: json.encode({
@@ -96,6 +96,9 @@ class Products with ChangeNotifier {
       // end add to local data state provider
 
       notifyListeners();
+    }).catchError((onError) {
+      print(onError);
+      throw onError;
     });
     // end send add data to firebase
   }
