@@ -129,11 +129,21 @@ class Products with ChangeNotifier {
     // end send add data to firebase
   }
 
-  void updateProduct(String id, Product newProduct) {
+  Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       // jika terdapat id yang sama, artinya data yang diperbarui ada dalam list _items
       // maka perbarui
+      final url = Uri.https(
+          'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
+          '/products/${id}.json');
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'price': newProduct.price,
+            'imageUrl': newProduct.imageUrl
+          }));
       _items[prodIndex] = newProduct;
       notifyListeners();
     } else {

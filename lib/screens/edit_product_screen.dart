@@ -99,12 +99,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
     if (_editProduct.id != null) {
       // berarti edit data
-      Provider.of<Products>(context, listen: false)
+      await Provider.of<Products>(context, listen: false)
           .updateProduct(_editProduct.id.toString(), _editProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop(); // kembali ke halaman sebelumnya
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
@@ -123,14 +119,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         child: Text('Okey'))
                   ],
                 ));
-      } finally {
-        // tidak peduli sukses atau gagal ini akan dijalankan setelah semua selesai
-        Navigator.of(context).pop(); // kembali ke halaman sebelumnya
-        setState(() {
-          _isLoading = false;
-        });
       }
+      // finally {
+      //   // tidak peduli sukses atau gagal ini akan dijalankan setelah semua selesai
+      //   Navigator.of(context).pop(); // kembali ke halaman sebelumnya
+      //   setState(() {
+      //     _isLoading = false;
+      //   });
+      // }
     }
+    setState(() {
+      _isLoading = false;
+    });
+    Navigator.of(context).pop(); // kembali ke halaman sebelumnya
   }
 
   Widget build(BuildContext context) {
