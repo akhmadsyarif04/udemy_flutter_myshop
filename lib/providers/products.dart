@@ -68,12 +68,24 @@ class Products with ChangeNotifier {
   //   notifyListeners(); // untuk memerintahkan state management cek perubahan data
   // }
 
+  Future<void> fetchAndSetProduct() async {
+    final url = Uri.https(
+        'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
+        '/products.json');
+    try {
+      final response = await http.get(url);
+      print(json.decode(response.body));
+    } catch (onError) {
+      throw onError;
+    }
+  }
+
   Future<void> addProduct(Product product) async {
     // begin send add data to firebase
     // https://shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app/
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products'); // sengaja dihilangkan .json agar terjadi error
+        '/products.json'); // sengaja dihilangkan .json agar terjadi error
 
     try {
       final response = await http.post(url,
