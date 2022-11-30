@@ -10,6 +10,12 @@ import '../screens/edit_product_screen.dart';
 
 class UserProductsScreen extends StatelessWidget {
   static const routeName = '/user-products';
+
+  Future<void> _refreshProducts(BuildContext context) async {
+    // karena diclass ini tidak context maka perlu ditambahkan parameter BuildContext agar bisa dipass ke dalam provider of. dimana didapat dari paramter yang nanti dikirim didalam widget
+    await Provider.of<Products>(context, listen: false).fetchAndSetProduct();
+  }
+
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<Products>(context);
@@ -26,18 +32,21 @@ class UserProductsScreen extends StatelessWidget {
                 icon: const Icon(Icons.add))
           ]),
       drawer: AppDrawer(),
-      body: Padding(
-        padding: EdgeInsets.all(8),
-        child: ListView.builder(
-          itemCount: productsData.items.length,
-          itemBuilder: (_, i) => Column(
-            children: [
-              UserProductItem(
-                  productsData.items[i].id!,
-                  productsData.items[i].title!,
-                  productsData.items[i].imageUrl!),
-              Divider(),
-            ],
+      body: RefreshIndicator(
+        onRefresh: () => _refreshProducts(context),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: ListView.builder(
+            itemCount: productsData.items.length,
+            itemBuilder: (_, i) => Column(
+              children: [
+                UserProductItem(
+                    productsData.items[i].id!,
+                    productsData.items[i].title!,
+                    productsData.items[i].imageUrl!),
+                Divider(),
+              ],
+            ),
           ),
         ),
       ),
