@@ -68,13 +68,13 @@ class Products with ChangeNotifier {
   //   notifyListeners(); // untuk memerintahkan state management cek perubahan data
   // }
 
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     // begin send add data to firebase
     // https://shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app/
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
         '/products.json');
-    http
+    return http
         .post(url,
             body: json.encode({
               'title': product.title,
