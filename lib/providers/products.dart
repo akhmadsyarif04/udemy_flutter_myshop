@@ -101,8 +101,7 @@ class Products with ChangeNotifier {
     // https://shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app/
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products.json'); // sengaja dihilangkan .json agar terjadi error
-
+        '/products.json');
     try {
       final response = await http.post(url,
           body: json.encode({
