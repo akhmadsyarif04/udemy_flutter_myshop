@@ -25,6 +25,34 @@ class Orders extends ChangeNotifier {
     return [..._orders];
   }
 
+  Future<void> fetchAndSetOrders() async {
+    final url = Uri.https(
+        'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
+        '/orders.json');
+    final response = await http.get(url);
+    final List<OrderItem> loaderOrders = [];
+    final extractedData = json.decode(response.body) as Map<String, dynamic>;
+    if (extractedData == null) {
+      return;
+    }
+    extractedData.forEach((key, value) {
+      loaderOrders.add(OrderItem(
+          id: key,
+          amount: value['amount'],
+          dateTime: DateTime.parse(value['datetime']),
+          products: (value['products'] as List<dynamic>)
+              .map((e) => CartItem(
+                  id: e['id'],
+                  title: e['title'],
+                  quantity: e['quantity'],
+                  price: e['price']))
+              .toList()));
+    });
+    _orders = loaderOrders.reversed
+        .toList(); // agar yang tampil paling atas adalah yang terbaru
+    notifyListeners();
+  }
+
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
