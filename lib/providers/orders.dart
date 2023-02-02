@@ -10,23 +10,23 @@ class OrderItem {
   final List<CartItem>? products;
   final DateTime? dateTime;
 
-  OrderItem({
-    @required this.id,
-    @required this.amount,
-    @required this.products,
-    @required this.dateTime,
-  });
+  OrderItem(
+      {@required this.id,
+      @required this.amount,
+      @required this.products,
+      @required this.dateTime});
 }
 
 class Orders extends ChangeNotifier {
   List<OrderItem> _orders = [];
   final String authToken;
+  final String userId;
 
   List<OrderItem> get orders {
     return [..._orders];
   }
 
-  Orders(this.authToken, this._orders);
+  Orders(this.authToken, this.userId, this._orders);
 
   Future<void> fetchAndSetOrders() async {
     var params = {
@@ -34,7 +34,7 @@ class Orders extends ChangeNotifier {
     };
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/orders.json',
+        '/orders/$userId.json',
         params);
     final response = await http.get(url);
     final List<OrderItem> loaderOrders = [];
@@ -66,7 +66,7 @@ class Orders extends ChangeNotifier {
     };
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/orders.json',
+        '/orders/$userId.json',
         params);
     final timestamp = DateTime.now();
     final response = await http.post(url,
