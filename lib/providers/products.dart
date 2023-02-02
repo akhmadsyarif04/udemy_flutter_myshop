@@ -75,10 +75,22 @@ class Products with ChangeNotifier {
   //   notifyListeners(); // untuk memerintahkan state management cek perubahan data
   // }
 
-  Future<void> fetchAndSetProduct() async {
-    var params = {
-      'auth': authToken,
-    };
+  // tanda [] pada argument artinya optional, akan tetapi wajib default value
+  Future<void> fetchAndSetProduct([bool filterByUser = false]) async {
+    var params;
+    if (filterByUser == true) {
+      params = <String, String?>{
+        'auth': authToken,
+        'orderBy': json.encode("creatorId"),
+        'equalTo': json.encode(userId),
+      };
+    }
+    if (filterByUser == false) {
+      params = <String, String?>{
+        'auth': authToken,
+      };
+    }
+
     var url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
         '/products.json',
@@ -90,6 +102,10 @@ class Products with ChangeNotifier {
       if (extractedData == null) {
         return;
       }
+
+      params = {
+        'auth': authToken,
+      };
 
       url = Uri.https(
           'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
@@ -115,7 +131,6 @@ class Products with ChangeNotifier {
       _items = loadedProducts;
       notifyListeners();
     } catch (error) {
-      print(error);
       throw (error);
     }
   }
@@ -137,7 +152,8 @@ class Products with ChangeNotifier {
             'title': product.title,
             'description': product.description,
             'price': product.price,
-            'imageUrl': product.imageUrl
+            'imageUrl': product.imageUrl,
+            'creatorId': userId
           }));
 
       // begin add to local data state provider

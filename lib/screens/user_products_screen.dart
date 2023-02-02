@@ -13,13 +13,18 @@ class UserProductsScreen extends StatelessWidget {
 
   Future<void> _refreshProducts(BuildContext context) async {
     // karena diclass ini tidak context maka perlu ditambahkan parameter BuildContext agar bisa dipass ke dalam provider of. dimana didapat dari paramter yang nanti dikirim didalam widget
-    await Provider.of<Products>(context, listen: false).fetchAndSetProduct();
+    await Provider.of<Products>(context, listen: false)
+        .fetchAndSetProduct(true);
   }
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<Products>(context);
-
+    // final productsData = Provider.of<Products>(context);
+    /* 
+      karena ini akan rebuild ketika ada perubahan product maka dicomment karena di widget menggunakan future yang mentriger _refreshProducts. yang kemungkinan akan terjadi infinite loop 
+      yang mana _refreshProducts adalah mendapatkan data product sehingga product terupdate lagi.
+    */
+    print('rebuild... user_products_screen');
     return Scaffold(
       appBar: AppBar(
           title: const Text(
@@ -32,23 +37,36 @@ class UserProductsScreen extends StatelessWidget {
                 icon: const Icon(Icons.add))
           ]),
       drawer: AppDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => _refreshProducts(context),
-        child: Padding(
-          padding: EdgeInsets.all(8),
-          child: ListView.builder(
-            itemCount: productsData.items.length,
-            itemBuilder: (_, i) => Column(
-              children: [
-                UserProductItem(
-                    productsData.items[i].id!,
-                    productsData.items[i].title!,
-                    productsData.items[i].imageUrl!),
-                Divider(),
-              ],
-            ),
-          ),
-        ),
+      body: FutureBuilder(
+        future: _refreshProducts(
+            context), // agar dipanggil ketika screen ini dipanggil
+        builder: (context, snapshot) => snapshot.connectionState ==
+                ConnectionState
+                    .waiting // jika masih dalam waiting maka berikan loading indicator
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+                onRefresh: () => _refreshProducts(context),
+                child: Consumer<Products>(
+                  // consumer membantu agar rebuild pada bagian yang berubah saja, tidak semua. dan menolong dalam pendapatkan data productsData pada provider Products
+                  builder: (ctx, productsData, _) => Padding(
+                    padding: EdgeInsets.all(8),
+                    child: ListView.builder(
+                      itemCount: productsData.items.length,
+                      itemBuilder: (_, i) => Column(
+                        children: [
+                          UserProductItem(
+                              productsData.items[i].id!,
+                              productsData.items[i].title!,
+                              productsData.items[i].imageUrl!),
+                          Divider(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
       ),
     );
   }
