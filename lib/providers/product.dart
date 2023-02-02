@@ -27,7 +27,7 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavoritStatus(String token) async {
+  Future<void> toggleFavoritStatus(String token, String userId) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners(); // agar provider mendengarkan bahwa ada perubahan pada data
@@ -38,11 +38,10 @@ class Product with ChangeNotifier {
 
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products/$id.json',
+        '/userFavorites/$userId/$id.json',
         params);
     try {
-      final response =
-          await http.patch(url, body: json.encode({'isFavorite': isFavorite}));
+      final response = await http.put(url, body: json.encode(isFavorite));
       if (response.statusCode >= 400) {
         _setFavoriteValue(oldStatus);
       }

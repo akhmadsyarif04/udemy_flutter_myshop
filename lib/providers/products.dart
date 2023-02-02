@@ -46,8 +46,9 @@ class Products with ChangeNotifier {
   // var _showFavoritesOnly = false;
 
   final String authToken;
+  final String userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
 
   List<Product> get items {
     // if (_showFavoritesOnly) {
@@ -78,16 +79,25 @@ class Products with ChangeNotifier {
     var params = {
       'auth': authToken,
     };
-    final url = Uri.https(
+    var url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
         '/products.json',
         params);
+
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) {
         return;
       }
+
+      url = Uri.https(
+          'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
+          '/userFavorites/$userId.json',
+          params);
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
+
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
@@ -95,7 +105,10 @@ class Products with ChangeNotifier {
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: prodData['isFavorite'],
+          isFavorite: favoriteData == null
+              ? false
+              : favoriteData[prodId] ??
+                  false, // jika favoriteData[prodId] masih null maka beri false
           imageUrl: prodData['imageUrl'],
         ));
       });
@@ -124,8 +137,7 @@ class Products with ChangeNotifier {
             'title': product.title,
             'description': product.description,
             'price': product.price,
-            'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite
+            'imageUrl': product.imageUrl
           }));
 
       // begin add to local data state provider
