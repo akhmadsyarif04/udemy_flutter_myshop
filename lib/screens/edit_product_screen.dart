@@ -67,7 +67,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     _descriptionFocusNode.dispose();
     _imageUrlController.dispose();
     _imageurlFocusNode.dispose();
-    _imageurlFocusNode.removeListener(_updateImageUrl);
     super
         .dispose(); // super keyword is used to refer immediate parent class object.
   }

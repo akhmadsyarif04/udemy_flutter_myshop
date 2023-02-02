@@ -108,11 +108,16 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
+    var params = {
+      'auth': authToken,
+    };
+
     // begin send add data to firebase
     // https://shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app/
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products.json');
+        '/products.json',
+        params);
     try {
       final response = await http.post(url,
           body: json.encode({
@@ -142,13 +147,17 @@ class Products with ChangeNotifier {
   }
 
   Future<void> updateProduct(String id, Product newProduct) async {
+    var params = {
+      'auth': authToken,
+    };
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
       // jika terdapat id yang sama, artinya data yang diperbarui ada dalam list _items
       // maka perbarui
       final url = Uri.https(
           'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-          '/products/${id}.json');
+          '/products/${id}.json',
+          params);
       await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
@@ -164,9 +173,13 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
+    var params = {
+      'auth': authToken,
+    };
     final url = Uri.https(
         'shop-app-flutter-472e2-default-rtdb.asia-southeast1.firebasedatabase.app',
-        '/products/$id.json');
+        '/products/$id.json',
+        params);
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
 
     Product? existingProduct = _items[existingProductIndex];
