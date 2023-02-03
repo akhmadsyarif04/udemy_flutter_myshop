@@ -75,6 +75,12 @@ class Products with ChangeNotifier {
   //   notifyListeners(); // untuk memerintahkan state management cek perubahan data
   // }
 
+  void updateUser(String token, String id) {
+    this.userId != id;
+    this.authToken != token;
+    notifyListeners();
+  }
+
   // tanda [] pada argument artinya optional, akan tetapi wajib default value
   Future<void> fetchAndSetProduct([bool filterByUser = false]) async {
     var params;
