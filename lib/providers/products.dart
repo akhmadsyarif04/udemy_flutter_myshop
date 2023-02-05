@@ -45,8 +45,8 @@ class Products with ChangeNotifier {
 
   // var _showFavoritesOnly = false;
 
-  final String authToken;
-  final String userId;
+  var authToken;
+  var userId;
 
   Products(this.authToken, this.userId, this._items);
 
@@ -76,8 +76,9 @@ class Products with ChangeNotifier {
   // }
 
   void updateUser(String token, String id) {
-    this.userId != id;
-    this.authToken != token;
+    print('updateUser');
+    this.userId = id;
+    this.authToken = token;
     notifyListeners();
   }
 
@@ -91,7 +92,9 @@ class Products with ChangeNotifier {
         'equalTo': json.encode(userId),
       };
     }
+
     if (filterByUser == false) {
+      print(authToken);
       params = <String, String?>{
         'auth': authToken,
       };
@@ -105,7 +108,8 @@ class Products with ChangeNotifier {
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
-      if (extractedData == null) {
+      print(extractedData);
+      if (extractedData.isEmpty || extractedData['error'] != null) {
         return;
       }
 
